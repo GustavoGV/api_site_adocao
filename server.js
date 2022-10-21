@@ -14,7 +14,7 @@ const sockets = new Server(server, {
   }
 });
 
-let Usuarios = schema.usuarios
+let Usuario = schema.usuarios
 
 let usersOnline = []
 
@@ -36,8 +36,50 @@ sockets.on('connection', async (socket) => {
         
     })
 
-    socket.on('cadastrar-usuario', async ({nome, cpf: String, celular, rua, bairro, numero_residencia, obeservacao_residencia,}) => {
+    socket.on('cadastro', async ({nome, sobrenome, cpf, celular, rua, bairro, numero_residencia, raca}) => {
 
+        let faltaInfo = 0
+        let infosFaltando = []
+        let index = -1
+        let items = ['nome', 'sobrenome', 'cpf', 'celular', 'rua', 'bairro', 'numero_residencia', 'raca']
+        let params = [nome, sobrenome, cpf, celular, rua, bairro, numero_residencia, raca]
+        params.forEach((param) => {
+            index = index + 1
+            if (param) {
+                if (param.length) {
+
+                }
+                else {
+                    faltaInfo = 1
+                    infosFaltando.push(items[index])
+                }
+
+            }
+            else{
+                faltaInfo = 1
+                infosFaltando.push(items[index])
+            }
+        })
+        if (faltaInfo) {
+            let msg = infosFaltando.toString() + ' estão faltando no cadastro'
+            socket.emit('respostaCadastro', msg)
+        }
+        else{
+        let newCadastro = new Usuario({
+            nome: nome,
+            sobrenome: sobrenome,
+            cpf: cpf,
+            celular: celular,
+            rua: rua,
+            bairro: bairro,
+            numero_residencia: numero_residencia,
+            raca: raca
+          })
+          
+          await newCadastro.save()
+          console.log('salvou')
+          socket.emit('respostaCadastro', 'Cadastro realizado com sucesso')
+        }
 
     })
     

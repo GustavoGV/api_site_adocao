@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 
 const usuario = new Schema({ //schema do banco de dados
     nome: String,
+    sobrenome: String,
     cpf: String,
     celular: String,
     rua: String,
